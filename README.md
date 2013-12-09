@@ -1,12 +1,12 @@
-jquery-contextmenu
-==================
+jquery-popoutmenu
+=================
 
 This plugin will help you adding popout-menus to any element on your page.
 
 Available settings
 ------------------
 - "structure": the structure of the menu. Either a list of objects or a list of lists of objects.
-  The keys should match the names of the placeholders surrounded by underscored in the "tplItem". (e.g. "href" --> "__href__").
+  The keys should match the names of the placeholders surrounded by underscored in the "tplItem". (e.g. "href" --> "\_\_href\_\_").
 - "tplContainer": the container for the menu.
 - "tplGroup": a container for a group of menu items. If you are not using grouping this element will hold all your items.
 - "tplItem": a menu item containing your placeholders which can be filled by your structure's object keys.
