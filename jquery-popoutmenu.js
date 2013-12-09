@@ -1,5 +1,8 @@
 /**
- *
+ * @license GNU General Public License v2 http://www.gnu.org/licenses/gpl-2.0
+ * @author BlueMöhre <bluemoehre@gmx.de>
+ * @copyright 2013 BlueMöhre
+ * @link http://www.github.com/bluemoehre
  */
 
 // use window and document as local variables due to performance improvement
