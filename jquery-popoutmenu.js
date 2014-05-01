@@ -49,14 +49,31 @@
     };
 
 
-    // plugin constructor
+    /**
+     * Plugin constructor
+     * @param {HTMLElement} el
+     * @constructor
+     */
     function Plugin(el)
     {
+        /**
+         * The element which was passed to the plugin
+         * @type {jQuery}
+         */
         var $el = $(el);
+
+        /**
+         * The plugin settings for this instance
+         * @type {Object}
+         */
         var opts = {};
 
-        var $doc = $(doc);
+        /**
+         * @type {?jQuery}
+         */
         var $flyout = null;
+
+        var $doc = $(doc);
 
         /**
          * Returns an escaped string
@@ -82,20 +99,24 @@
             return $(tplItem);
         };
 
-        // init function to setup
-        this.init = function(args){
-            // read plugin options from element attribute
+        /**
+         * Init function for setting up this instance
+         * The settings are cascaded in the following order:
+         *  - the plugin defaults
+         *  - the given options via jQuery-call
+         *  - the element options via attribute
+         *  (latest takes precedence)
+         *
+         * @param {Object} initOpts
+         */
+        this.init = function(initOpts){
+
             var attrOptStr = $el.attr('data-'+ PLUGIN_NAME);
             var attrOpts = attrOptStr ? $.parseJSON(attrOptStr) : {};
-
-            // create a new option set based upon
-            // - the plug-in's defaults
-            // - the given options via call
-            // - the elements options via attribute
-            opts = $.extend(opts, args, attrOpts);
+            opts = $.extend(opts, defOpts, initOpts, attrOpts);
 
             // add event handlers
-            $el.off('click.'+ PLUGIN_NAME).on('click.'+ PLUGIN_NAME, function(evt){
+            $el.on('click.'+ PLUGIN_NAME, function(evt){
                 evt.preventDefault();
 
                 // build the list when not already done
@@ -145,8 +166,7 @@
         // destroy function to remove this plugin off the element
         this.destroy = function(){
             $doc.off('.' + PLUGIN_NAME);
-            $el.off('.' + PLUGIN_NAME);
-            $el.find('*').off('.' + PLUGIN_NAME);
+            $el.find('*').addBack().off('.' + PLUGIN_NAME);
             $el.removeData(PLUGIN_NAME);
             $el = null;
         };
@@ -155,37 +175,38 @@
             opts = $.extend(opts, args);
         };
 
-
-        this.init(defOpts);
     }
 
 
-    // plug-in wrapper prevents multiple instances for same node
+    // Register plugin on jQuery
     $.fn[PLUGIN_NAME] = function(){
         var args = arguments;
-        return this.each(function() {
+
+        return this.each(function(){
+
+            // Prevent multiple instances for same element
             var instance = $.data(this, PLUGIN_NAME);
             if (!instance){
                 instance = new Plugin(this);
                 $.data(this, PLUGIN_NAME, instance);
+                instance.init(typeof args[0] == 'object' ? args[0] : {});
             }
+            // Call public function
             if (instance[args[0]]){
-                instance[args[0]](args[1]);
-            } else if (typeof args[0] == 'object'){
-                instance.init(args[0]);
-            } else if (args[0]) {
-                $.error("Method '" + args[0] + "' doesn't exist for " + PLUGIN_NAME + " plug-in");
+                instance[args[0]](typeof args[1] == 'object' ? args[1] : {});
             }
+            else if (args[0]) {
+                $.error("Method '" + args[0] + "' doesn't exist for " + PLUGIN_NAME + " plugin");
+            }
+
         });
+
     };
 
 
-    // Autoloader
-    // Attention! DOMContentAdded is no official event and therefore must be triggered manually with the needed nodes
-    $(doc).on('DOMContentLoaded DOMContentAdded ajaxStop', function(evt, nodes){
-        var $nodes = $(nodes || document);
-        var $el = $nodes.find('[data-' + PLUGIN_NAME + ']').addBack('[data-' + PLUGIN_NAME + ']');
-        $el[PLUGIN_NAME]();
+    // Auto pilot
+    $(doc).on('ajaxStop DOMContentLoaded DOMContentAdded', function(evt, nodes){
+        $(nodes || document).find('[data-' + PLUGIN_NAME + ']').addBack('[data-' + PLUGIN_NAME + ']')[PLUGIN_NAME]();
     });
 
 
