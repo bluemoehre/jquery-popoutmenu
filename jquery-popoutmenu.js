@@ -29,17 +29,17 @@
     var defOpts = {
         structure: [
             /*
-            [
-                { href: '/sample1', text: 'Sample 1' },
-                { href: '/sample2', text: 'Sample 2', class: 'highlight' },
-                { href: '/sample3', text: 'Sample 3' },
-                { href: '/sample4', text: 'Sample 4' }
-            ],
-            [
-                { href: '/sample5', text: 'Sample 5' },
-                { href: '/sample6', text: 'Sample 6' }
-            ]
-            */
+             [
+             { href: '/sample1', text: 'Sample 1' },
+             { href: '/sample2', text: 'Sample 2', class: 'highlight' },
+             { href: '/sample3', text: 'Sample 3' },
+             { href: '/sample4', text: 'Sample 4' }
+             ],
+             [
+             { href: '/sample5', text: 'Sample 5' },
+             { href: '/sample6', text: 'Sample 6' }
+             ]
+             */
         ],
         tplContainer: '<div class="popoutmenu"></div>',
         tplGroup: '<ul></ul>',
@@ -144,15 +144,16 @@
 
                 // if flyout is available and is not attached to the dom
                 if ($flyout && !$flyout.parent().length){
-                    $flyout.css({
+                    $flyout
+                        .css({
                         opacity: 0,
                         position: 'absolute',
                         left: $el.position().left + $el.outerWidth()/2 +'px',
                         top: $el.position().top + $el.outerHeight() + parseInt($el.css('margin-top')) +'px'
-                        })
-                        .insertAfter($el)
-                        .css('margin-left', $flyout.outerWidth()/2*-1 +'px')
-                        .fadeTo(opts.animSpeed, 1, function(){
+                    })
+                    .insertAfter($el)
+                    .css('margin-left', $flyout.outerWidth()/2*-1 +'px')
+                    .fadeTo(opts.animSpeed, 1, function(){
                         $doc.one('click.'+ PLUGIN_NAME, function(){
                             $flyout.fadeTo(opts.animSpeed, 0, function(){
                                 $flyout.detach();
@@ -163,7 +164,10 @@
             });
         };
 
-        // destroy function to remove this plugin off the element
+        /**
+         * Remove this plugin off the element
+         * This function should revert all changes which have been made by this plugin
+         */
         this.destroy = function(){
             $doc.off('.' + PLUGIN_NAME);
             $el.find('*').addBack().off('.' + PLUGIN_NAME);
@@ -171,6 +175,10 @@
             $el = null;
         };
 
+        /**
+         * Returns the current settings of this instance or the result of merging current settings with given settings
+         * @param {Object} [args]
+         */
         this.getOpts = function(args){
             opts = $.extend(opts, args);
         };
@@ -205,7 +213,7 @@
 
 
     // Auto pilot
-    $(doc).on('ajaxStop DOMContentLoaded DOMContentAdded', function(evt, nodes){
+    $(doc).on('ready ajaxStop DOMContentLoaded', function(evt, nodes){
         $(nodes || document).find('[data-' + PLUGIN_NAME + ']').addBack('[data-' + PLUGIN_NAME + ']')[PLUGIN_NAME]();
     });
 
