@@ -284,7 +284,7 @@
 
 
     // Auto pilot
-    $(doc).on('ajaxStop DOMContentLoaded DOMContentAdded', function (evt, nodes) {
+    $(doc).on('ready ajaxStop DOMContentLoaded', function (evt, nodes) {
         $(nodes || document).find('[data-' + PLUGIN_NAME + ']').addBack('[data-' + PLUGIN_NAME + ']')[PLUGIN_NAME]();
     });
 
